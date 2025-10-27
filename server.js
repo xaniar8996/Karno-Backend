@@ -20,9 +20,11 @@ app.use(express.static(path.join(__dirname, "/pubilc")));
 
 
 app.use("/Register" , require("./routes/Auth/Register"));
+app.use("/Login" , require("./routes/Auth/Login"));
+app.use("/Refresh" , require("./routes/Refresh"));
 
 
 mongoose.connection.once("open" , () => {
-    console.log("Connected to mongoDB");
-    app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+    console.log("Connected to mongoDB ✅");
+    app.listen(PORT, () => console.log(`Server is running on port ${PORT} 🔢`));
 })
