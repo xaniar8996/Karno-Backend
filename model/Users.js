@@ -14,9 +14,29 @@ const UsersSchema = new Schema({
         type: String,
         required: true
     },
+    verifyOtp: {
+        type: String,
+        default: "",
+    },
+    verifyOtpExpiredAt: {
+        type: Number,
+        default: 0,
+    },
+    isAccountVerified: {
+        type: Boolean,
+        default: false,
+    },
+    resetOtp: {
+        type: String,
+        default: "",
+    },
+    resetOtpExpiredAt: {
+        type: String,
+        default: 0,
+    },
     refreshToken: {
         type: String,
-        required: true
+        default: "",
     }
 })
 

@@ -19,11 +19,11 @@ const HandleRegister = async (req, res) => {
         const RegisterUser = await Users.create({
             Fullname: Fullname,
             email: email, 
-            password: hashedPass
+            password: hashedPass,
         });
 
         if (RegisterUser) {
-            res.status(200).json({ message: `User ${Fullname} Registered Successfully` });
+            res.status(201).json({ message: `User ${Fullname} Registered Successfully` });
         }
 
     } catch (error) {

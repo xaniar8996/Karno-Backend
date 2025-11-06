@@ -8,7 +8,8 @@ const whiteList = require("./Allowedorgins")
                 callback(new Error ("Not allowed by CORS"))
             }
         },
-        optionsSucessStatus:200
+        credentials: true,
+        optionsSuccessStatus: 200
     };
 
     module.exports = CorsOptions

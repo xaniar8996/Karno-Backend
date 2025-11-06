@@ -2,6 +2,7 @@
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
+const cookieParser = require("cookie-parser");
 const path = require("path");
 const cors = require("cors");
 require('dotenv').config()
@@ -14,14 +15,19 @@ DBConnection();
 app.use(express.urlencoded({ extended: false }))
 
 app.use(cors(CorsOptions));
+
 app.use(express.json());
+app.use(cookieParser())
 
 app.use(express.static(path.join(__dirname, "/pubilc")));
 
-
+// Auth routes
 app.use("/Register" , require("./routes/Auth/Register"));
 app.use("/Login" , require("./routes/Auth/Login"));
+app.use("/otp" , require("./routes/Auth/OTP-route"));
 app.use("/Refresh" , require("./routes/Refresh"));
+// home routes
+app.use("/users" , require("./routes/Users/SingleUser-route"));
 
 
 mongoose.connection.once("open" , () => {

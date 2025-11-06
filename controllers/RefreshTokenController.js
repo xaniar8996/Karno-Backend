@@ -44,7 +44,7 @@ const HandleRefreshToken = async (req, res) => {
         // Generate new access token
         const accessToken = jwt.sign(
             {
-                userId: foundUser._id,
+                id: foundUser._id,
                 email: foundUser.email
             },
             process.env.ACCESS_TOKEN,
@@ -52,26 +52,28 @@ const HandleRefreshToken = async (req, res) => {
         );
 
         // Optionally rotate refresh token for better security
-        const newRefreshToken = jwt.sign(
-            {
-                userId: foundUser._id,
-                email: foundUser.email
-            },
-            process.env.REFRESH_TOKEN,
-            { expiresIn: "7d" }
-        );
+        
+        // const newRefreshToken = jwt.sign(
+        //     {
+        //         id: foundUser._id,
+        //         email: foundUser.email
+        //     },
+        //     process.env.REFRESH_TOKEN,
+        //     { expiresIn: "7d" }
+        // );
 
-        // Update refresh token in database
-        foundUser.refreshToken = newRefreshToken;
-        await foundUser.save();
+        // // Update refresh token in database
 
-        // Set new refresh token cookie
-        res.cookie("jwt", newRefreshToken, {
-            httpOnly: true,
-            // secure: process.env.NODE_ENV === "production",
-            // sameSite: "strict",
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        });
+        // foundUser.refreshToken = newRefreshToken;
+        // await foundUser.save();
+
+        // // Set new refresh token cookie
+        // res.cookie("jwt", newRefreshToken, {
+        //     httpOnly: true,
+        //     // secure: process.env.NODE_ENV === "production",
+        //     // sameSite: "strict",
+        //     maxAge: 7 * 24 * 60 * 60 * 1000
+        // });
 
         return res.status(200).json({
             accessToken,
