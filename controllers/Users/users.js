@@ -18,4 +18,17 @@ const GetSingleUser = async (req, res) => {
     }
 }
 
-module.exports = GetSingleUser;
+const GetAllUsers = async (req, res) => {
+    try {
+        const AllUsers = await Users.find();
+
+        if (!AllUsers) return res.status(404).json({ success: false, message: "Failed to fetch users !" });
+
+        return res.status(200).json({ success: true, message: "Users fetched successfully !", data: AllUsers });
+
+    } catch (err) {
+        return res.status(500).json({ success: false, message: `Failed to get users` });
+    }
+}
+
+module.exports = {GetSingleUser , GetAllUsers};

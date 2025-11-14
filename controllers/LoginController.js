@@ -28,7 +28,8 @@ const HandleLogin = async (req, res) => {
 
         const tokenPayload = {
             id: Founduser._id,
-            email: Founduser.email
+            email: Founduser.email,
+            roles: Founduser.roles 
         };
 
         const accessToken = jwt.sign(
@@ -48,7 +49,7 @@ const HandleLogin = async (req, res) => {
 
         res.cookie("jwt", refreshToken, {
             httpOnly: true,
-            // sameSite: "strict",
+            sameSite: true,
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
 

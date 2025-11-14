@@ -14,7 +14,7 @@ const sendVerifyOTP = async (req, res) => {
         const user = await Users.findById(id);
 
         if (!user) {
-            return res.status(404).json({ success: false, message: "User not found !" });
+            return res.status(401).json({ success: false, message: "User not found !" });
         }
 
         if (user.isAccountVerified) {
@@ -68,11 +68,11 @@ const verifyEmail = async (req, res) => {
     try {
         const user = await Users.findById(id);
 
-        if (!user) return res.json({ success: false, message: "User not found !" });
+        if (!user) return res.status(404).json({ success: false, message: "User not found !" });
 
-        if (user.verifyOtp === "" || user.verifyOtp !== OTP) return res.json({ success: false, message: "Invalid OTP" });
+        if (user.verifyOtp === "" || user.verifyOtp !== OTP) return res.status(401).json({ success: false, message: "Invalid OTP" });
 
-        if (user.verifyOtpExpiredAt < Date.now()) return res.json({ success: false, message: "OTP Expired" })
+        if (user.verifyOtpExpiredAt < Date.now()) return res.status(410).json({ success: false, message: "OTP Expired" })
 
         user.isAccountVerified = true;
         user.verifyOtp = "";

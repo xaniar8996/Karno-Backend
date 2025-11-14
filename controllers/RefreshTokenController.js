@@ -45,7 +45,8 @@ const HandleRefreshToken = async (req, res) => {
         const accessToken = jwt.sign(
             {
                 id: foundUser._id,
-                email: foundUser.email
+                email: foundUser.email,
+                roles: foundUser.roles 
             },
             process.env.ACCESS_TOKEN,
             { expiresIn: ACCESS_TOKEN_EXPIRY }

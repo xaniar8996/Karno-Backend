@@ -27,7 +27,7 @@ app.use("/Login" , require("./routes/Auth/Login"));
 app.use("/otp" , require("./routes/Auth/OTP-route"));
 app.use("/Refresh" , require("./routes/Refresh"));
 // home routes
-app.use("/users" , require("./routes/Users/SingleUser-route"));
+app.use("/users" , require("./routes/Users/users-route"));
 
 
 mongoose.connection.once("open" , () => {

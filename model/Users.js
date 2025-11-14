@@ -14,6 +14,14 @@ const UsersSchema = new Schema({
         type: String,
         required: true
     },
+    roles: {
+        User: {
+            type: Number,
+            default: 2001
+        },
+        Moderator: Number,
+        Admin: Number,
+    },
     verifyOtp: {
         type: String,
         default: "",
@@ -31,7 +39,7 @@ const UsersSchema = new Schema({
         default: "",
     },
     resetOtpExpiredAt: {
-        type: String,
+        type: Number,
         default: 0,
     },
     refreshToken: {
