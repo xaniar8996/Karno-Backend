@@ -28,7 +28,8 @@ app.use("/otp" , require("./routes/Auth/OTP-route"));
 app.use("/Refresh" , require("./routes/Refresh"));
 // home routes
 app.use("/users" , require("./routes/Users/users-route"));
-
+// CV routes
+app.use("/cv" , require("./routes/CV/CVRoutes"))
 
 mongoose.connection.once("open" , () => {
     console.log("Connected to mongoDB ✅");
