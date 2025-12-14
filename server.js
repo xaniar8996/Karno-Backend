@@ -8,6 +8,7 @@ const cors = require("cors");
 require('dotenv').config()
 const DBConnection = require("./config/DBconnection")
 const CorsOptions = require("./config/corsOptions");
+const rateLimit = require("./middleware/rateLimit");
 const PORT = process.env.PORT || 3500;
 
 DBConnection();
@@ -21,6 +22,8 @@ app.use(cookieParser())
 
 app.use(express.static(path.join(__dirname, "/pubilc")));
 
+app.use(rateLimit);
+
 // Auth routes
 app.use("/Register" , require("./routes/Auth/Register"));
 app.use("/Login" , require("./routes/Auth/Login"));
@@ -29,7 +32,10 @@ app.use("/Refresh" , require("./routes/Refresh"));
 // home routes
 app.use("/users" , require("./routes/Users/users-route"));
 // CV routes
-app.use("/cv" , require("./routes/CV/CVRoutes"))
+app.use("/cv" , require("./routes/CV/CVRoutes"));
+// logout
+app.use("/logout" , require("./routes/Auth/logout"));
+
 
 mongoose.connection.once("open" , () => {
     console.log("Connected to mongoDB ✅");

@@ -21,6 +21,7 @@ const verifyJWT = async (req, res, next) => {
             req.body = {};
         }
         req.body.id = tokenDecoded.id;
+        req.userId = tokenDecoded.id;
         req.roles = tokenDecoded.roles; 
         next();
     } catch (error) {

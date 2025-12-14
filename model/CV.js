@@ -13,6 +13,7 @@ const CVModel = new Schema({
         required: true
     },
     personal: {
+        Image: String,
         fullName: {
             type: String,
             required: true
