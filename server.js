@@ -33,6 +33,8 @@ app.use("/Refresh" , require("./routes/Refresh"));
 app.use("/users" , require("./routes/Users/users-route"));
 // CV routes
 app.use("/cv" , require("./routes/CV/CVRoutes"));
+// Notifications routes
+app.use("/notifications" , require("./routes/Notifications/NotificationsRoutes"));
 // logout
 app.use("/logout" , require("./routes/Auth/logout"));
 

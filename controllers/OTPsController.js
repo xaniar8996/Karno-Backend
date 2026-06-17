@@ -2,6 +2,7 @@
 const Users = require("../model/Users");
 const transporter = require("../config/nodemailer");
 const bcrypt = require("bcrypt");
+const { getVerifyOTPTemplate, getResetPasswordOTPTemplate } = require("../config/emailTemplates");
 
 const sendVerifyOTP = async (req, res) => {
     try {
@@ -32,19 +33,7 @@ const sendVerifyOTP = async (req, res) => {
             from: "کارنو",
             to: user.email,
             subject: "OTP شما ارسال شد ✅",
-            html:
-                `
-            <div dir="rtl" style="font-family: Tahoma;">
-            <h2>
-            جهت وارد شدن به اپلیکیشن رمز زیر را در اپ وارد نمایید 👇
-            </h2>
-            <div style="text-center">
-            <h1 style="font-bold">
-                ${OTP}
-            </h1>
-            </div>
-                </div>
-            `
+            html: getVerifyOTPTemplate(OTP)
         };
 
         // Don't await - send in background
@@ -109,19 +98,7 @@ const sendResetPasswordOTP = async (req, res) => {
             from: "کارنو",
             to: user.email,
             subject: "OTP شما ارسال شد ✅",
-            html:
-                `   
-                <div dir="rtl" style="font-family: Tahoma;">
-                <h2>
-                جهت بازیابی رمز عبور خود رمز زیر را در اپ وارد نمایید 👇
-                </h2>
-                <div style="text-center">
-                <h1 style="font-bold">
-                    ${OTP}
-                </h1>
-                </div>
-                </div>  
-            `
+            html: getResetPasswordOTPTemplate(OTP)
         };
 
         // Don't await - send in background
@@ -134,13 +111,12 @@ const sendResetPasswordOTP = async (req, res) => {
     }
 }
 
-const ResetPassword = async (req, res) => {
-    const { email, OTP, newPassword } = req.body;
+const verifyResetPasswordOTP = async (req, res) => {
+    const { email, OTP } = req.body;
 
-    if (!email || !OTP || !newPassword) return res.status(400).json({ success: false, message: "Missing Details !" });
+    if (!email || !OTP) return res.status(400).json({ success: false, message: "Missing Details !" });
 
     try {
-
         const user = await Users.findOne({ email });
 
         if (!user) return res.status(404).json({ success: false, message: "User not found !" });
@@ -148,6 +124,23 @@ const ResetPassword = async (req, res) => {
         if (user.resetOtp === "" || user.resetOtp !== OTP) return res.status(400).json({ success: false, message: "Invalid OTP" });
 
         if (user.resetOtpExpiredAt < Date.now()) return res.status(400).json({ success: false, message: "OTP Expired" });
+
+        return res.status(200).json({ success: true, message: "OTP verified successfully ✅" })
+
+    } catch (err) {
+        return res.json({ success: false, message: err.message })
+    }
+}
+
+const ResetPassword = async (req, res) => {
+    const { email, newPassword } = req.body;
+
+    if (!email || !newPassword) return res.status(400).json({ success: false, message: "Missing Details !" });
+
+    try {
+        const user = await Users.findOne({ email });
+
+        if (!user) return res.status(404).json({ success: false, message: "User not found !" });
 
         const hashedPassword = await bcrypt.hash(newPassword, 10);
 
@@ -163,4 +156,4 @@ const ResetPassword = async (req, res) => {
     }
 }
 
-module.exports = { verifyEmail, sendVerifyOTP, sendResetPasswordOTP, ResetPassword }
+module.exports = { verifyEmail, sendVerifyOTP, sendResetPasswordOTP, verifyResetPasswordOTP, ResetPassword }

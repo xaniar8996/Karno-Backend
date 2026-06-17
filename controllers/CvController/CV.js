@@ -234,4 +234,118 @@ const UpdateCV = async (req, res) => {
 };
 
 
-module.exports = { AddCV, FetchUserCV, UpdateCV };
+const FetchAllCVs = async (req, res) => {
+    try {
+        const allCVs = await CV.find({});
+
+        if (!allCVs.length) {
+            return res.status(404).json({
+                success: false,
+                message: "هیچ رزومه‌ای یافت نشد",
+                data: [],
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "تمام رزومه‌ها دریافت شدند",
+            data: allCVs,
+        });
+    } catch (error) {
+        console.error("خطا در دریافت تمام CVها:", error);
+        return res.status(500).json({
+            success: false,
+            message: "خطا در دریافت رزومه‌ها",
+            error: error.message,
+        });
+    }
+};
+
+const GetCVById = async (req, res) => {
+    try {
+        const cvId = req.params?.id;
+
+        if (!cvId) {
+            return res.status(400).json({
+                success: false,
+                message: "شناسه رزومه الزامی است",
+            });
+        }
+
+        const cv = await CV.findById(cvId);
+
+        if (!cv) {
+            return res.status(404).json({
+                success: false,
+                message: "رزومه یافت نشد",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "رزومه دریافت شد",
+            data: cv,
+        });
+    } catch (error) {
+        console.error("خطا در دریافت CV:", error);
+        return res.status(500).json({
+            success: false,
+            message: "خطا در دریافت رزومه",
+            error: error.message,
+        });
+    }
+};
+
+const DeleteCV = async (req, res) => {
+    try {
+        const cvId = req.params?.id;
+        const userId = req.userId;
+
+        if (!cvId) {
+            return res.status(400).json({
+                success: false,
+                message: "شناسه رزومه الزامی است",
+            });
+        }
+
+        if (!userId) {
+            return res.status(401).json({
+                success: false,
+                message: "احراز هویت الزامی است",
+            });
+        }
+
+        const cv = await CV.findById(cvId);
+
+        if (!cv) {
+            return res.status(404).json({
+                success: false,
+                message: "رزومه یافت نشد",
+            });
+        }
+
+        // Check if user owns this CV
+        if (cv.id?.toString() !== userId?.toString()) {
+            return res.status(403).json({
+                success: false,
+                message: "اجازه حذف این رزومه را ندارید",
+            });
+        }
+
+        await CV.findByIdAndDelete(cvId);
+
+        return res.status(200).json({
+            success: true,
+            message: "رزومه با موفقیت حذف شد",
+        });
+    } catch (error) {
+        console.error("خطا در حذف CV:", error);
+        return res.status(500).json({
+            success: false,
+            message: "خطا در حذف رزومه",
+            error: error.message,
+        });
+    }
+};
+
+module.exports = { AddCV, FetchUserCV, UpdateCV, FetchAllCVs, GetCVById, DeleteCV };
