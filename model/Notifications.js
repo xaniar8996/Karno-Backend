@@ -18,8 +18,8 @@ const NotificationsSchema = new Schema(
         },
         type: {
             type: String,
-            enum: ["info", "success", "warning", "error"],
-            default: "info",
+            enum: ["auth", "warning", "system"],
+            default: "system",
         },
         isRead: {
             type: Boolean,
