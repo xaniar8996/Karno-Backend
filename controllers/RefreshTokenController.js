@@ -13,7 +13,7 @@ const HandleRefreshToken = async (req, res) => {
             return res.status(401).json({
                 message: "Refresh token not found"
             });
-        }
+        };
 
         // Verify token before database query
         let decoded;

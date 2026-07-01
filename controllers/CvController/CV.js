@@ -1,6 +1,7 @@
 const CV = require("../../model/CV");
-const { parseCVPayload, 
-     buildPersonalData,
+const Users = require("../../model/Users");
+const { parseCVPayload,
+    buildPersonalData,
 } = require("./uploadPhoto");
 
 
@@ -64,7 +65,9 @@ const AddCV = async (req, res) => {
                 message: "خطا در آپلود تصویر پروفایل",
                 error: uploadError.message,
             });
-        }
+        };
+
+
 
         const newCV = await CV.create({
             id: userId,
@@ -77,7 +80,7 @@ const AddCV = async (req, res) => {
             languages,
             projects,
             skills,
-            socialLink
+            socialLink,
         });
 
         res.status(201).json({
@@ -315,6 +318,7 @@ const DeleteCV = async (req, res) => {
             });
         }
 
+        const currentUser = await Users.findById(userId);
         const cv = await CV.findById(cvId);
 
         if (!cv) {
@@ -325,7 +329,7 @@ const DeleteCV = async (req, res) => {
         }
 
         // Check if user owns this CV
-        if (cv.id?.toString() !== userId?.toString()) {
+        if (cv.id?.toString() !== userId?.toString() & !currentUser.roles.Admin) {
             return res.status(403).json({
                 success: false,
                 message: "اجازه حذف این رزومه را ندارید",

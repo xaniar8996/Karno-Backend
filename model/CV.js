@@ -2,14 +2,14 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const CVModel = new Schema({
-    id:{
-        type:String,
-        required:true,
+    id: {
+        type: String,
+        required: true,
         index: true, // Add index for faster queries
     },
-    template:{
-        type:String,
-        default:"",
+    template: {
+        type: String,
+        default: "",
         required: true
     },
     personal: {
@@ -24,7 +24,7 @@ const CVModel = new Schema({
         phone: String,
         address: String,
     },
-    
+
     certificate: [{
         CourseName: {
             type: String,
@@ -33,7 +33,7 @@ const CVModel = new Schema({
         },
         Date: String,
     }],
-    
+
     education: [{
         institute: {
             type: String,
@@ -44,7 +44,7 @@ const CVModel = new Schema({
         degree: String,
         description: String,
     }],
-    
+
     experiences: [{
         company: {
             type: String,
@@ -59,11 +59,11 @@ const CVModel = new Schema({
         dateRange: String,
         description: String,
     }],
-    
+
     interests: [{
         Description: String,
     }],
-    
+
     languages: [{
         languageName: {
             type: String,
@@ -75,7 +75,7 @@ const CVModel = new Schema({
             required: true,
         },
     }],
-    
+
     projects: [{
         title: {
             type: String,
@@ -86,7 +86,7 @@ const CVModel = new Schema({
         github: String,
         description: String,
     }],
-    
+
     skills: [{
         name: {
             type: String,
@@ -94,7 +94,7 @@ const CVModel = new Schema({
         },
         level: String
     }],
-    
+
     socialLink: [{
         platform: {
             type: String,
@@ -104,7 +104,10 @@ const CVModel = new Schema({
             type: String,
             required: true
         }
-    }]
-},);
+    }],
+}, {
+    timestamps: true,
+},
+);
 
 module.exports = mongoose.model("CV", CVModel);
