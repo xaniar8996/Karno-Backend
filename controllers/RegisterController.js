@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const Users = require("../model/Users");
+const logger = require("../config/logger");
 
 const HandleRegister = async (req, res) => {
     try {
@@ -21,11 +22,26 @@ const HandleRegister = async (req, res) => {
             password: hashedPass,
         });
 
+        logger.info({
+            event: "USER_REGISTER",
+            userId: RegisterUser._id,
+            fullname: RegisterUser.Fullname,
+            email: RegisterUser.email,
+            ip: req.ip,
+        });
+
         if (RegisterUser) {
             res.status(201).json({ message: `User ${Fullname} Registered Successfully` });
         }
 
     } catch (error) {
+        logger.error({
+            event: "USER_REGISTER_FAILED",
+            message: error.message,
+            stack: error.stack,
+            ip: req.ip,
+         });
+         
         console.error("❌ Registration error:", error);
         return res.status(500).json({ message: "Internal server error" });
     }

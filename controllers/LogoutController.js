@@ -1,4 +1,5 @@
 
+const logger = require("../config/logger");
 const Users = require("../model/Users");
 
 // Assumes verifyJWT middleware has already attached user id to req.userId
@@ -29,8 +30,23 @@ const Logout = async (req, res) => {
             path: "/", 
         });
 
+        logger.info({
+            event:"USER_LOGGED_OUT",
+            userId: user._id,
+            email: user.email,
+            Fullname:user.Fullname,
+            ip: req.ip,
+        });
+
         return res.status(200).json({ message: "Logged out successfully" });
     } catch (error) {
+        logger.error({
+            event: "USER_LOGGED_OUT_FAILED",
+            message: error.message,
+            stack: error.stack,
+            ip: req.ip,
+         });
+
         console.error("Logout error:", error);
         return res.status(500).json({ message: "Internal server error", error: error.message });
     }

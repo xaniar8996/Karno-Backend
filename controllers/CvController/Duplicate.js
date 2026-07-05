@@ -18,6 +18,15 @@ const DuplicateCV = async (req, res) => {
 
         const duplicatedCV = await CV.create(copy);
 
+        logger.info({
+            event:"CV_DUPLICATED",
+            userId:duplicatedCV.id,
+            duplicatedCVId: duplicatedCV._id,
+            duplicatedCVTemplate: duplicatedCV.template,
+            personal:duplicatedCV.personal,
+            ip: req.ip,
+        });
+
         return res.status(201).json({
             success: true,
             message: "رزومه با موفقیت کپی شد.",

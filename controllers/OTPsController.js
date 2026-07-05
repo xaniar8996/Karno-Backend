@@ -3,6 +3,7 @@ const Users = require("../model/Users");
 const transporter = require("../config/nodemailer");
 const bcrypt = require("bcrypt");
 const { getVerifyOTPTemplate, getResetPasswordOTPTemplate } = require("../config/emailTemplates");
+const logger = require("../config/logger");
 
 const sendVerifyOTP = async (req, res) => {
     try {
@@ -39,9 +40,26 @@ const sendVerifyOTP = async (req, res) => {
         // Don't await - send in background
         transporter.sendMail(mailOptions)
 
+        logger.info({
+            event:"OTP_SENT",
+            userId: id,
+            fullname: user.Fullname,
+            verifyOTP: user.verifyOtp,
+            createdAt:user.createdAt,
+            ip: req.ip,
+        });
+
         res.status(200).json({ success: true, message: "OTP send to email successfully !" })
 
-    } catch (err) {
+    } catch (error) {
+        logger.error({
+            event: "OTP_SENT_FAILED",
+            message: error.message,
+            stack: error.stack,
+            id,
+            ip: req.ip,
+         });
+
         console.log(err);
         return res.status(500).json({ success: false, message: "Internal server error" });
     }
@@ -149,10 +167,26 @@ const ResetPassword = async (req, res) => {
         user.resetOtpExpiredAt = 0;
         await user.save();
 
+        logger.info({
+            event:"PASSWORD_RESET",
+            userId: user._id,
+            fullname: user.Fullname,
+            verifyOTP: user.verifyOtp,
+            createdAt:user.createdAt,
+            ip: req.ip,
+        });
+
         return res.status(200).json({ success: true, message: "Password reset successfully !" })
 
-    } catch (err) {
-        return res.json({ success: false, message: err.message })
+    } catch (error) {
+        logger.error({
+            event: "PASSWORD_RESET_FAILED",
+            message: error.message,
+            stack: error.stack,
+            ip: req.ip,
+         });
+
+        return res.json({ success: false, message: error.message })
     }
 }
 

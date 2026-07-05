@@ -3,6 +3,7 @@ const Users = require("../../model/Users");
 const { parseCVPayload,
     buildPersonalData,
 } = require("./uploadPhoto");
+const logger = require("../../config/logger");
 
 
 const AddCV = async (req, res) => {
@@ -83,6 +84,15 @@ const AddCV = async (req, res) => {
             socialLink,
         });
 
+        logger.info({
+            event:"CV_CREATED",
+            userId:newCV.id,
+            cvId: newCV._id,
+            cvTemplate: newCV.template,
+            personal:newCV.personal,
+            ip: req.ip,
+        });
+
         res.status(201).json({
             success: true,
             message: "رزومه با موفقیت ذخیره شد",
@@ -91,6 +101,14 @@ const AddCV = async (req, res) => {
         console.log("رزومه یا موفقیت ذخیره شد");
 
     } catch (error) {
+        logger.error({
+            event: "CV_CREATED_FAILED",
+            message: error.message,
+            stack: error.stack,
+            ip: req.ip,
+         });
+
+
         console.error("خطا در ذخیره CV:", error);
         res.status(500).json({
             success: false,
@@ -221,12 +239,30 @@ const UpdateCV = async (req, res) => {
 
         const updated = await existing.save();
 
+        logger.info({
+            event:"CV_UPDATED",
+            userId:userId,
+            existingCV: existing._id,
+            existingCVTemplate: existing.template,
+            existingPersonal:existing.personal,
+            ip: req.ip,
+        });
+
+
         return res.status(200).json({
             success: true,
             message: "رزومه با موفقیت به‌روزرسانی شد",
             data: updated,
         });
     } catch (error) {
+        logger.error({
+            event: "CV_UPDATED_FAILED",
+            message: error.message,
+            stack: error.stack,
+            ip: req.ip,
+         });
+
+
         console.error("خطا در ویرایش CV:", error);
         return res.status(500).json({
             success: false,
@@ -337,12 +373,29 @@ const DeleteCV = async (req, res) => {
         }
 
         await CV.findByIdAndDelete(cvId);
+        
+        logger.info({
+            event:"CV_CREATED",
+            userId:userId,
+            cvId: cv._id,
+            cvTemplate: cv.template,
+            personal:cv.personal,
+            ip: req.ip,
+        });
 
         return res.status(200).json({
             success: true,
             message: "رزومه با موفقیت حذف شد",
         });
     } catch (error) {
+        logger.error({
+            event: "CV_CREATED_FAILED",
+            message: error.message,
+            stack: error.stack,
+            ip: req.ip,
+         });
+
+
         console.error("خطا در حذف CV:", error);
         return res.status(500).json({
             success: false,

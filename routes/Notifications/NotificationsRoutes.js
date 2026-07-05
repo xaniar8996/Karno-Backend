@@ -11,6 +11,5 @@ const {
 Router.post("/sendNotification", verifyJWT, SendNotification);
 Router.get("/get-notifications", verifyJWT, GetNotifications);
 Router.get("/get-notifications/:userId", verifyJWT, GetUserNotifications);
-Router.put("/mark-as-read", verifyJWT, MarkAsRead);
 
 module.exports = Router;

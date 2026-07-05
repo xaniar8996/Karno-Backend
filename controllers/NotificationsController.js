@@ -1,3 +1,4 @@
+const logger = require("../config/logger");
 const Notifications = require("../model/Notifications");
 const mongoose = require("mongoose");
 
@@ -19,12 +20,28 @@ const SendNotification = async (req, res) => {
             type: type || "info",
         });
 
+        logger.info({
+            event:"SEND_NOTIFICATION",
+            toUserId:userId,
+            title: title,
+            type: type,
+            createdAt:notification.createdAt,
+            ip: req.ip,
+        });
+
         return res.status(201).json({
             success: true,
             message: "اطلاعیه با موفقیت ارسال شد",
             data: notification,
         });
     } catch (error) {
+        logger.error({
+            event: "SEND_NOTIFICATION_FAILED",
+            message: error.message,
+            stack: error.stack,
+            ip: req.ip,
+         });
+
         console.error("خطا در ارسال اطلاعیه:", error);
         return res.status(500).json({
             success: false,
@@ -105,59 +122,8 @@ const GetUserNotifications = async (req, res) => {
     }
 };
 
-const MarkAsRead = async (req, res) => {
-    try {
-        const { notificationId } = req.body;
-
-        if (!notificationId) {
-            return res.status(400).json({
-                success: false,
-                message: "notificationId الزامی است",
-            });
-        }
-
-        // Validate and convert notificationId to MongoDB ObjectId
-        let objectNotificationId;
-        try {
-            objectNotificationId = new mongoose.Types.ObjectId(notificationId);
-        } catch (err) {
-            return res.status(400).json({
-                success: false,
-                message: "notificationId نامعتبر است",
-            });
-        }
-
-        const notification = await Notifications.findByIdAndUpdate(
-            objectNotificationId,
-            { isRead: true },
-            { new: true }
-        );
-
-        if (!notification) {
-            return res.status(404).json({
-                success: false,
-                message: "اطلاعیه یافت نشد",
-            });
-        }
-
-        return res.status(200).json({
-            success: true,
-            message: "اطلاعیه به‌عنوان خوانده شده علامت‌گذاری شد",
-            data: notification,
-        });
-    } catch (error) {
-        console.error("خطا در علامت‌گذاری اطلاعیه:", error);
-        return res.status(500).json({
-            success: false,
-            message: "خطا در علامت‌گذاری اطلاعیه",
-            error: error.message,
-        });
-    }
-};
-
 module.exports = {
     SendNotification,
     GetNotifications,
     GetUserNotifications,
-    MarkAsRead,
 };

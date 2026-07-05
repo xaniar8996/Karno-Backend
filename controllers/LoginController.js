@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const Users = require("../model/Users");
 const transporter = require("../config/nodemailer")
 const jwt = require("jsonwebtoken");
+const logger = require("../config/logger");
 require("dotenv").config();
 
 
@@ -77,6 +78,14 @@ const HandleLogin = async (req, res) => {
 
         console.log(`user logged in successfully with email ${email} ✔️`);
 
+        logger.info({
+            event:"USER_LOGGED_IN",
+            userId: Founduser._id,
+            email: Founduser.email,
+            Fullname:Founduser.Fullname,
+            ip: req.ip,
+        });
+
         return res.status(200).json({
             message: `User ${email} logged in successfully ✅`,
             accessToken,
@@ -87,6 +96,14 @@ const HandleLogin = async (req, res) => {
         });
 
     } catch (error) {
+        logger.error({
+            event: "USER_LOGGED_IN_FAILED",
+            message: error.message,
+            stack: error.stack,
+            ip: req.ip,
+         });
+
+
         console.error("❌ Login error ❌:", error);
         return res.status(500).json({ message: "Internal server error" });
     }

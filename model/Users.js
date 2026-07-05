@@ -22,6 +22,10 @@ const UsersSchema = new Schema({
         Moderator: Number,
         Admin: Number,
     },
+    aiUsage: {
+        count: { type: Number, default: 0 },
+        lastReset: { type: Date, default: Date.now }
+    },
     verifyOtp: {
         type: String,
         default: "",
@@ -46,6 +50,10 @@ const UsersSchema = new Schema({
         type: String,
         default: "",
     }
-})
+},
+    {
+        timestamps: true
+    },
+)
 
 module.exports = mongoose.model("Users", UsersSchema)
