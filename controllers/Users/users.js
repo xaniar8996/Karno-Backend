@@ -1,5 +1,5 @@
-
 const Users = require("../../model/Users");
+const logger = require("../../config/logger");
 
 const GetSingleUser = async (req, res) => {
     const { id } = req.body;
