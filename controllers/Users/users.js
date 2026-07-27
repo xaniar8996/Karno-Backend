@@ -8,6 +8,7 @@ const GetSingleUser = async (req, res) => {
 
     try {
         const SingleUser = await Users.findById(id);
+        
 
         if (!SingleUser) return res.status(404).json({ success: false, message: "User not found !" });
 

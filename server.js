@@ -37,6 +37,8 @@ app.use("/cv" , require("./routes/CV/CVRoutes"));
 app.use("/notifications" , require("./routes/Notifications/NotificationsRoutes"));
 // AI routes
 app.use("/ai" , require("./routes/AIRoutes/ai-route"));
+// admin
+app.use("/admin" , require("./routes/AdminRoutes/userSearchRoute"));
 // logout
 app.use("/logout" , require("./routes/Auth/logout"));
 
