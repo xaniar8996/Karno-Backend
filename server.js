@@ -39,6 +39,8 @@ app.use("/notifications" , require("./routes/Notifications/NotificationsRoutes")
 app.use("/ai" , require("./routes/AIRoutes/ai-route"));
 // admin
 app.use("/admin" , require("./routes/AdminRoutes/userSearchRoute"));
+// Contact Us
+app.use("/contact-us" , require("./routes/ContactUsRoute"));
 // logout
 app.use("/logout" , require("./routes/Auth/logout"));
 
