@@ -12,14 +12,20 @@ const ContactUsController = async (req, res) => {
         .json({ success: false, message: "Missing data!" });
     }
 
-    const sanitizedSubject = subject.replace(/[\r\n]/g, " ");
+    // Basic HTML tag stripping to reduce injection risk
+    const stripTags = (s = "") => String(s).replace(/<[^>]*>?/gm, "").trim();
+
+    const sanitizedFullname = stripTags(Fullname);
+    const sanitizedEmail = String(email).trim().toLowerCase();
+    const sanitizedSubject = stripTags(subject).replace(/[\r\n]/g, " ");
+    const sanitizedMessage = stripTags(message);
 
     const mailOptions = {
       from: `"فرم تماس با ما" <${process.env.SMTP_USER || "noreply@xanitech.ir"}>`,
       to: "xanitech.ir@gmail.com",
-      replyTo: email, 
+      replyTo: sanitizedEmail,
       subject: `[تماس با ما] ${sanitizedSubject}`,
-      html: getContactUsData(Fullname, email, subject, message),
+      html: getContactUsData(sanitizedFullname, sanitizedEmail, sanitizedSubject, sanitizedMessage),
     };
 
     await transporter.sendMail(mailOptions);

@@ -10,7 +10,14 @@ const HandleRegister = async (req, res) => {
             return res.status(400).json({ message: "Fullname , email and password are required !" })
         };
 
-        const Founduser = await Users.findOne({ email }).exec();
+        // Basic password policy
+        if (typeof password !== 'string' || password.length < 8) {
+            return res.status(400).json({ message: "Password must be at least 8 characters long" });
+        }
+
+        const normalizedEmail = String(email).toLowerCase();
+
+        const Founduser = await Users.findOne({ email: normalizedEmail }).exec();
 
         if (Founduser) return res.status(409).json({ success: false, message: "user is already exist !" });
 
@@ -18,7 +25,7 @@ const HandleRegister = async (req, res) => {
 
         const RegisterUser = await Users.create({
             Fullname: Fullname,
-            email: email, 
+            email: normalizedEmail,
             password: hashedPass,
         });
 

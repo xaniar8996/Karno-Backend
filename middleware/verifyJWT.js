@@ -28,8 +28,7 @@ const verifyJWT = async (req, res, next) => {
         console.error("JWT Verification Error:", error.message);
         return res.status(401).json({
             success: false,
-            message: "Unauthorized, login again (catch part)",
-            error: error.message
+            message: "Unauthorized, login again",
         });
     }
 }

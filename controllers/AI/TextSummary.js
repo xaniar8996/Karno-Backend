@@ -17,6 +17,10 @@ const TextSummary = async (req, res) => {
 
         const user = await Users.findById(userId);
 
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
         const LIMIT = 20;
 
         const now = new Date();

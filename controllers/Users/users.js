@@ -7,8 +7,7 @@ const GetSingleUser = async (req, res) => {
     if (!id) return res.status(401).json({ success: false, message: "user id is required !" });
 
     try {
-        const SingleUser = await Users.findById(id);
-        
+        const SingleUser = await Users.findById(id).select("-password -refreshToken -resetOtp -verifyOtp");
 
         if (!SingleUser) return res.status(404).json({ success: false, message: "User not found !" });
 
@@ -21,7 +20,7 @@ const GetSingleUser = async (req, res) => {
 
 const GetAllUsers = async (req, res) => {
     try {
-        const AllUsers = await Users.find();
+        const AllUsers = await Users.find().select("-password -refreshToken -resetOtp -verifyOtp");
 
         if (!AllUsers) return res.status(404).json({ success: false, message: "Failed to fetch users !" });
 
@@ -78,7 +77,7 @@ const DeleteUser = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Failed to delete user",
-            error: err.message,
+            error: error.message,
         });
     }
 };

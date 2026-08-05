@@ -14,17 +14,19 @@ const HandleLogin = async (req, res) => {
             return res.status(400).json({ message: "email and password are required !" })
         };
 
-        const Founduser = await Users.findOne({ email });
+        const normalizedEmail = String(email).toLowerCase();
+
+        const Founduser = await Users.findOne({ email: normalizedEmail });
 
         if (!Founduser) {
-            console.log("User doesn't exit ❌");
-            return res.status(409).json({ message: "User doesn't exit !" });
+            // Generic response to avoid user enumeration
+            return res.status(404).json({ message: "User Not found" });
         }
 
         const ComparePass = await bcrypt.compare(password, Founduser.password);
 
         if (!ComparePass) {
-            return res.status(401).json({ message: "Incorrect password!" });
+            return res.status(401).json({ message: "Invalid credentials" });
         }
 
         const tokenPayload = {
@@ -48,9 +50,11 @@ const HandleLogin = async (req, res) => {
         Founduser.refreshToken = refreshToken
         await Founduser.save();
 
+        // Set refresh token cookie with secure flag in production
         res.cookie("jwt", refreshToken, {
             httpOnly: true,
             sameSite: "strict",
+            secure: process.env.NODE_ENV === "production",
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
 

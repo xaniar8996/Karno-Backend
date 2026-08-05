@@ -89,7 +89,6 @@ const AddCV = async (req, res) => {
             userId:newCV.id,
             cvId: newCV._id,
             cvTemplate: newCV.template,
-            personal:newCV.personal,
             ip: req.ip,
         });
 
@@ -244,7 +243,6 @@ const UpdateCV = async (req, res) => {
             userId:userId,
             existingCV: existing._id,
             existingCVTemplate: existing.template,
-            existingPersonal:existing.personal,
             ip: req.ip,
         });
 
@@ -365,7 +363,7 @@ const DeleteCV = async (req, res) => {
         }
 
         // Check if user owns this CV
-        if (cv.id?.toString() !== userId?.toString() & !currentUser.roles.Admin) {
+        if (cv.id?.toString() !== userId?.toString() && !currentUser.roles?.Admin) {
             return res.status(403).json({
                 success: false,
                 message: "اجازه حذف این رزومه را ندارید",
@@ -375,11 +373,10 @@ const DeleteCV = async (req, res) => {
         await CV.findByIdAndDelete(cvId);
         
         logger.info({
-            event:"CV_CREATED",
+            event:"CV_DELETED",
             userId:userId,
             cvId: cv._id,
             cvTemplate: cv.template,
-            personal:cv.personal,
             ip: req.ip,
         });
 

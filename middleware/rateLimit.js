@@ -1,12 +1,60 @@
 
 const { rateLimit } = require("express-rate-limit");
 
-const limiter = rateLimit({
+// Global limiter (general protection)
+const globalLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
-    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-    ipv6Subnet: 56, // Set to 60 or 64 to be less aggressive, or 52 or 48 to be more aggressive
-})
+    limit: 100, // Limit each IP to 100 requests per window
+    standardHeaders: true,
+    legacyHeaders: false,
+});
 
-module.exports = limiter;
+// Stricter limiters for sensitive endpoints
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 10,
+    message: { message: "Too many login attempts, please try again later." },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+const registerLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000,
+    limit: 5,
+    message: { message: "Too many accounts created from this IP, please try later." },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+const otpLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 6,
+    message: { message: "Too many OTP requests, please try again later." },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+const aiLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000,
+    limit: 60,
+    message: { message: "AI request rate limit exceeded" },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+const contactLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000,
+    limit: 20,
+    message: { message: "Too many contact requests, please try again later." },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+module.exports = {
+    globalLimiter,
+    loginLimiter,
+    registerLimiter,
+    otpLimiter,
+    aiLimiter,
+    contactLimiter,
+};
