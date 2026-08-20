@@ -2,8 +2,12 @@
 const Users = require("../model/Users");
 const transporter = require("../config/nodemailer");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const { getVerifyOTPTemplate, getResetPasswordOTPTemplate } = require("../config/emailTemplates");
 const logger = require("../config/logger");
+
+const RESET_TOKEN_SECRET = process.env.RESET_TOKEN_SECRET || process.env.REFRESH_TOKEN;
+const RESET_TOKEN_EXPIRY = "15m";
 
 const sendVerifyOTP = async (req, res) => {
     try {
@@ -154,7 +158,17 @@ const verifyResetPasswordOTP = async (req, res) => {
         user.resetOtpExpiredAt = 0;
         await user.save();
 
-        return res.status(200).json({ success: true, message: "OTP verified successfully ✅" })
+        const resetToken = jwt.sign(
+            { id: user._id, email: user.email, purpose: "password_reset" },
+            RESET_TOKEN_SECRET,
+            { expiresIn: RESET_TOKEN_EXPIRY }
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: "OTP verified successfully ✅",
+            resetToken,
+        });
 
     } catch (err) {
         return res.json({ success: false, message: err.message })
@@ -163,18 +177,48 @@ const verifyResetPasswordOTP = async (req, res) => {
 
 const ResetPassword = async (req, res) => {
 
-    const { email, newPassword } = req.body;
+    const { resetToken, email, newPassword } = req.body;
 
-    if (!email || !newPassword ) {
+    if (!newPassword || (!resetToken && !email)) {
         return res.status(400).json({
             success: false,
-            message: "Email, OTP and password are required.",
+            message: "Reset token (or email) and new password are required.",
         });
     }
 
     try {
+        let user;
 
-        const user = await Users.findOne({ email });
+        if (resetToken) {
+            let decoded;
+
+            try {
+                decoded = jwt.verify(resetToken, RESET_TOKEN_SECRET);
+            } catch {
+                return res.status(401).json({
+                    success: false,
+                    message: "Reset token is invalid or expired.",
+                });
+            }
+
+            if (decoded.purpose !== "password_reset") {
+                return res.status(401).json({
+                    success: false,
+                    message: "Invalid reset token.",
+                });
+            }
+
+            user = await Users.findById(decoded.id);
+
+            if (!user || user.email !== decoded.email) {
+                return res.status(401).json({
+                    success: false,
+                    message: "Invalid reset token.",
+                });
+            }
+        } else {
+            user = await Users.findOne({ email });
+        }
 
         if (!user) {
             return res.status(404).json({

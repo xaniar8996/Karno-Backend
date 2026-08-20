@@ -20,7 +20,7 @@ const HandleRegister = async (req, res) => {
         const Founduser = await Users.findOne({ email: normalizedEmail }).exec();
 
         if (Founduser) return res.status(409).json({ success: false, message: "user is already exist !" });
-
+41523
         const hashedPass = await bcrypt.hash(password, 10);
 
         const RegisterUser = await Users.create({
