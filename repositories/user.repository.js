@@ -42,9 +42,6 @@ const searchUsersRepo = async (filters) => {
 
     Users.countDocuments(query),
   ]);
-  console.log(data);
-  
-
 
   return {
     data,
